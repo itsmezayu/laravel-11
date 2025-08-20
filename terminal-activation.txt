@@ -19,5 +19,3 @@ uvicorn main:app --reload --port 8001
 cd C:/laragon/www/api-ptn-prodi-data
 ./venv/Scripts/activate
 uvicorn api:app --reload --port 8002
-
-#
