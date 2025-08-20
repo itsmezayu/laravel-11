@@ -1,0 +1,21 @@
+# --- TERMINAL 1: BACKEND LARAVEL ---
+cd C:/laragon/www/laravel-11
+php artisan serve
+
+# --- TERMINAL 2: FRONTEND VITE ---
+cd C:/laragon/www/laravel-11
+npm run dev
+
+# --- TERMINAL 3: MAILPIT ---
+cd C:/laragon/bin/mailpit
+./mailpit.exe
+
+# --- TERMINAL 4: API PYTHON (JIKA DIGUNAKAN) ---
+cd C:/laragon/www/python-service
+./venv/Scripts/activate
+uvicorn main:app --reload --port 8001
+
+# --- TERMINAL 5: API PTN ---
+cd C:/laragon/www/api-ptn-prodi-data
+./venv/Scripts/activate
+uvicorn api:app --reload --port 8002

@@ -1,0 +1,101 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+
+class UserManagementController extends Controller
+{
+    /**
+     * Menampilkan daftar semua user.
+     */
+    public function index(Request $request)
+    {
+        // Tentukan kolom yang boleh diurutkan
+        $sortableColumns = ['name', 'email', 'role', 'created_at'];
+        $sortBy = $request->query('sort_by', 'created_at');
+        $sortDirection = $request->query('sort_direction', 'desc');
+
+        // Validasi
+        if (!in_array($sortBy, $sortableColumns)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array(strtolower($sortDirection), ['asc', 'desc'])) {
+            $sortDirection = 'desc';
+        }
+
+        // Ambil data user dengan sorting dan paginasi
+        $users = User::orderBy($sortBy, $sortDirection)->paginate(10);
+
+        // Kirim variabel sorting ke view
+        return view('admin.users.index', compact('users', 'sortBy', 'sortDirection'));
+    }
+
+    /**
+     * Menampilkan form untuk mengedit user.
+     */
+    public function edit(User $user)
+    {
+        // Aturan baru: Akun primordial tidak bisa diedit
+        if ($user->email === 'superadmin@admin.com') { // <-- GANTI DENGAN EMAIL PRIMORDIAL-MU
+            return redirect()->route('admin.users.index')->with('error', 'Akun Super Admin tidak bisa diedit.');
+        }
+
+        return view('admin.users.edit', compact('user'));
+    }
+
+    /**
+     * Meng-update data user di database.
+     */
+    public function update(Request $request, User $user)
+    {
+        // Aturan baru: Akun primordial tidak bisa diedit
+        if ($user->email === 'superadmin@admin.com') {
+            return redirect()->route('admin.users.index')->with('error', 'Akun Super Admin tidak bisa diedit.');
+        }
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'role' => ['required', 'string', Rule::in(['admin', 'user'])],
+            'password' => ['nullable', 'string', 'min:1', 'confirmed'],
+        ]);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->role = $request->role;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
+    }
+
+    /**
+     * Menghapus user dari database.
+     */
+    public function destroy(User $user)
+    {
+        // Aturan 1: Admin tidak bisa menghapus akunnya sendiri
+        if ($user->id === Auth::id()) {
+            return back()->with('error', 'Anda tidak bisa menghapus akun Anda sendiri.');
+        }
+
+        // Aturan 2: Siapapun tidak bisa menghapus akun "primordial"
+        if ($user->email === 'superadmin@admin.com') { // <-- GANTI DENGAN EMAIL PRIMORDIAL-MU
+            return back()->with('error', 'Akun Super Admin tidak bisa dihapus.');
+        }
+
+        $user->delete();
+
+        return redirect()->route('admin.users.index')->with('success', 'User deleted successfully.');
+    }
+}
