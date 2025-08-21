@@ -39,7 +39,7 @@
                 </h1>
 
                 <p class="mt-4 text-lg text-gray-600 dark:text-gray-400">
-                    Manage your team data easily and efficiently. 
+                    Manage your team data easily and efficiently.
                 </p>
             </div>
         </div>
