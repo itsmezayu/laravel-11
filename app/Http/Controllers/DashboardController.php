@@ -25,10 +25,10 @@ class DashboardController extends Controller
             'countryError' => null,
             'analysisResults' => null,
             'originalText' => null,
-            'wordData' => null, // Variabel untuk Kamus
-            'wordError' => null, // Variabel error untuk Kamus
-            'loremText' => null, // Variabel untuk Lorem Ipsum
-            'earthquakeData' => null, // Variabel BARU untuk data gempa
+            'wordData' => null,
+            'wordError' => null,
+            'loremText' => null,
+            'earthquakeData' => null,
             'ptnList' => $ptnResponse->successful() ? $ptnResponse->json() : [],
             'ptnError' => $ptnResponse->failed() ? 'Gagal memuat daftar PTN.' : null,
 
@@ -67,7 +67,7 @@ class DashboardController extends Controller
             }
         }
 
-        // --- Logika Lorem Ipsum Generator (Diperbarui) ---
+        // --- Logika Lorem Ipsum Generator ---
         if ($request->has('generate_lorem')) {
             $validated = $request->validate([
                 'generate_count' => 'required|integer|min:1|max:100',
@@ -85,7 +85,7 @@ class DashboardController extends Controller
             }
         }
 
-        // --- Logika Chart Gempa Bumi (BARU) ---
+        // --- Logika Chart Gempa Bumi ---
         $endDate = now()->format('Y-m-d');
         $startDate = now()->subDays(7)->format('Y-m-d'); // Mengambil data gempa bumi selama [] hari terakhir
 
