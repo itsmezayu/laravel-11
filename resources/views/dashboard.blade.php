@@ -271,17 +271,21 @@
 </script>
 {{-- Script API --}}
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         // ... (kode untuk chart gempa tetap sama) ...
 
         // Logika untuk Eksplorasi PTN & Prodi
-        let currentSort = { by: 'nama_prodi', direction: 'asc' };
+        let currentSort = {
+            by: 'nama_prodi',
+            direction: 'asc'
+        };
         const ptnSelect = document.getElementById('ptn_select');
         const prodiContainer = document.getElementById('prodi-list-container');
 
         function fetchAndDisplayProdi(url) {
             if (!ptnSelect.value) {
-                prodiContainer.innerHTML = '<p class="text-gray-500">Silakan pilih PTN untuk melihat daftar prodinya.</p>';
+                prodiContainer.innerHTML =
+                    '<p class="text-gray-500">Silakan pilih PTN untuk melihat daftar prodinya.</p>';
                 return;
             }
             prodiContainer.innerHTML = '<p class="text-gray-500">Memuat data prodi...</p>';
@@ -290,13 +294,15 @@
                 .then(response => response.json())
                 .then(paginator => {
                     if (paginator.error || paginator.data.length === 0) {
-                        prodiContainer.innerHTML = `<p class="text-gray-500">Data prodi tidak ditemukan.</p>`;
+                        prodiContainer.innerHTML =
+                            `<p class="text-gray-500">Data prodi tidak ditemukan.</p>`;
                         return;
                     }
 
                     let tableHtml = `<div class="overflow-x-auto"><table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-50 dark:bg-gray-700/50">
                                 <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase cursor-pointer" data-sort="kode_prodi">Kode Prodi</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase cursor-pointer" data-sort="nama_prodi">Nama Prodi</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase cursor-pointer" data-sort="tahun">Tahun</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase cursor-pointer" data-sort="peminat">Peminat</th>
@@ -308,6 +314,8 @@
                     paginator.data.forEach(prodi => {
                         tableHtml += `
                             <tr>
+
+                                <td class="px-6 py-4 whitespace-nowrap">${prodi.kode_prodi ?? 'N/A'}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">${prodi.nama_prodi ?? 'N/A'}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">${prodi.tahun ?? 'N/A'}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">${prodi.peminat ?? 'N/A'}</td>
@@ -318,23 +326,29 @@
                     tableHtml += `</tbody></table></div>`;
 
                     // Membuat link paginasi
-                    let paginationHtml = '<div class="mt-4 flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">';
-                    paginationHtml += `<div>Menampilkan ${paginator.from} sampai ${paginator.to} dari ${paginator.total} hasil</div>`;
+                    let paginationHtml =
+                        '<div class="mt-4 flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">';
+                    paginationHtml +=
+                        `<div>Menampilkan ${paginator.from} sampai ${paginator.to} dari ${paginator.total} hasil</div>`;
                     paginationHtml += '<div class="flex items-center space-x-2">';
                     paginator.links.forEach(link => {
                         const url = link.url ? `data-url="${link.url}"` : '';
                         const label = link.label.replace(/&laquo;|&raquo;/g, '').trim();
-                        const classes = link.active ? 'bg-indigo-600 text-white' : (link.url ? 'bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600' : 'bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600');
+                        const classes = link.active ? 'bg-indigo-600 text-white' : (link.url ?
+                            'bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600' :
+                            'bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600');
                         const tag = link.url ? 'button' : 'span';
 
-                        paginationHtml += `<${tag} ${url} class="px-3 py-1 rounded-md ${classes}">${label}</${tag}>`;
+                        paginationHtml +=
+                            `<${tag} ${url} class="px-3 py-1 rounded-md ${classes}">${label}</${tag}>`;
                     });
                     paginationHtml += '</div></div>';
 
                     prodiContainer.innerHTML = tableHtml + paginationHtml;
                 })
                 .catch(error => {
-                    prodiContainer.innerHTML = '<p class="text-red-500">Terjadi kesalahan. Cek console untuk detail.</p>';
+                    prodiContainer.innerHTML =
+                        '<p class="text-red-500">Terjadi kesalahan. Cek console untuk detail.</p>';
                     console.error('Fetch Error:', error);
                 });
         }
@@ -342,8 +356,12 @@
         ptnSelect.addEventListener('change', () => {
             const ptnId = ptnSelect.value;
             // Reset sorting saat ganti PTN
-            currentSort = { by: 'nama_prodi', direction: 'asc' };
-            const initialUrl = `/api/ptn/${ptnId}/prodi?sort_by=${currentSort.by}&sort_direction=${currentSort.direction}`;
+            currentSort = {
+                by: 'nama_prodi',
+                direction: 'asc'
+            };
+            const initialUrl =
+                `/api/ptn/${ptnId}/prodi?sort_by=${currentSort.by}&sort_direction=${currentSort.direction}`;
             fetchAndDisplayProdi(initialUrl);
         });
 
@@ -360,7 +378,8 @@
                     currentSort.by = sortBy;
                     currentSort.direction = 'asc';
                 }
-                const url = `/api/ptn/${ptnSelect.value}/prodi?sort_by=${currentSort.by}&sort_direction=${currentSort.direction}`;
+                const url =
+                    `/api/ptn/${ptnSelect.value}/prodi?sort_by=${currentSort.by}&sort_direction=${currentSort.direction}`;
                 fetchAndDisplayProdi(url);
             } else if (button) { // Jika tombol paginasi diklik
                 const url = new URL(button.dataset.url);
