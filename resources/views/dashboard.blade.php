@@ -272,7 +272,6 @@
 {{-- Script API --}}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // ... (kode untuk chart gempa tetap sama) ...
 
         // Logika untuk Eksplorasi PTN & Prodi
         let currentSort = {
