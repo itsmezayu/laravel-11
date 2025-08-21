@@ -301,11 +301,26 @@
                     let tableHtml = `<div class="overflow-x-auto"><table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-50 dark:bg-gray-700/50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase cursor-pointer" data-sort="kode_prodi">Kode Prodi</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase cursor-pointer" data-sort="nama_prodi">Nama Prodi</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase cursor-pointer" data-sort="tahun">Tahun</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase cursor-pointer" data-sort="peminat">Peminat</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase cursor-pointer" data-sort="daya_tampung">Daya Tampung</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase cursor-pointer" data-sort="kode_prodi">
+                                        Kode Prodi
+                                        <span id="sort-icon-kode_prodi"></span>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase cursor-pointer" data-sort="nama_prodi">
+                                        Nama Prodi
+                                        <span id="sort-icon-nama_prodi"></span>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase cursor-pointer" data-sort="tahun">
+                                        Tahun
+                                        <span id="sort-icon-tahun"></span>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase cursor-pointer" data-sort="peminat">
+                                        Peminat
+                                        <span id="sort-icon-peminat"></span>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase cursor-pointer" data-sort="daya_tampung">
+                                        Daya Tampung
+                                        <span id="sort-icon-daya_tampung"></span>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">`;
@@ -344,6 +359,12 @@
                     paginationHtml += '</div></div>';
 
                     prodiContainer.innerHTML = tableHtml + paginationHtml;
+                    // Update ikon sorting
+                    document.querySelectorAll('thead th span').forEach(span => span.textContent = '');
+                    const currentIconSpan = document.getElementById(`sort-icon-${currentSort.by}`);
+                    if (currentIconSpan) {
+                        currentIconSpan.textContent = currentSort.direction === 'asc' ? ' ▲' : ' ▼';
+                    }
                 })
                 .catch(error => {
                     prodiContainer.innerHTML =
