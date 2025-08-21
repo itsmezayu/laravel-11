@@ -10,7 +10,7 @@ npm run dev
 cd C:/laragon/bin/mailpit
 ./mailpit.exe
 
-# --- TERMINAL 4: API PYTHON (JIKA DIGUNAKAN) ---
+# --- TERMINAL 4: API TEXT ANALYZER ---
 cd C:/laragon/www/python-service
 ./venv/Scripts/activate
 uvicorn main:app --reload --port 8001
