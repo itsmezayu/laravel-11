@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class PtnProdiController extends Controller
 {
@@ -30,7 +30,21 @@ class PtnProdiController extends Controller
                 $prodiList = $prodiList->sortBy($sortBy);
             }
 
-            return response()->json($prodiList->values());
+            // Logika Paginasi Manual
+            $perPage = 10; // Jumlah item per halaman
+            $currentPage = $request->get('page', 1);
+            $pagedData = $prodiList->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+            $paginator = new LengthAwarePaginator(
+                $pagedData,
+                $prodiList->count(),
+                $perPage,
+                $currentPage,
+                ['path' => $request->url()]
+            );
+
+            // withQueryString() akan membuat link paginasi menyertakan parameter sorting
+            return response()->json($paginator->withQueryString());
         }
 
         return response()->json(['error' => 'Gagal mengambil data prodi.'], 404);
