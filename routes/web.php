@@ -20,7 +20,6 @@ Route::view('/', 'welcome')->name('welcome');
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // Route untuk Dashboard utama (menerima GET dan POST)
-    // Pastikan route ini menggunakan Route::match
     Route::match(['get', 'post'], '/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     // Route untuk Halaman About Us (hanya admin)
     Route::get('/about-us', [AboutController::class, 'index'])->name('about.index');
