@@ -29,8 +29,8 @@ class DashboardController extends Controller
             'wordError' => null,
             'loremText' => null,
             'earthquakeData' => null,
-            'ptnList' => $ptnResponse->successful() ? $ptnResponse->json() : [],
-            'ptnError' => $ptnResponse->failed() ? 'Gagal memuat daftar PTN.' : null,
+        //    'ptnList' => $ptnResponse->successful() ? $ptnResponse->json() : [],
+        //    'ptnError' => $ptnResponse->failed() ? 'Gagal memuat daftar PTN.' : null,
 
         ];
 
