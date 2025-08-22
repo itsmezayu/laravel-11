@@ -24,10 +24,13 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class, 'ends_with:@school.com,@admin.com'],
-            'password' => ['required', 'confirmed', Rules\Password::min(1)
-            //    ->mixedCase()
-            //    ->numbers()
-            //    ->symbols()
+            'password' => [
+                'required',
+                'confirmed',
+                Rules\Password::min(1)
+                //    ->mixedCase()
+                //    ->numbers()
+                //    ->symbols()
             ],
         ], [
             'email.ends_with' => 'Maaf, hanya email dengan domain @school.com yang diizinkan untuk mendaftar.',

@@ -10,6 +10,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
 
+                    {{-- About Us --}}
                     <div class="text-center mb-10">
                         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Tentang Kami: {{ $companyName }}
                         </h1>
@@ -17,6 +18,7 @@
                             biasa.</p>
                     </div>
 
+                    {{-- Members --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                         @forelse ($teamMembers as $member)
                             <div

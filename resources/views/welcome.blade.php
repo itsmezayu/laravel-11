@@ -32,6 +32,7 @@
             </div>
         @endif
 
+        {{-- Content --}}
         <div class="max-w-7xl mx-auto p-6 lg:p-8">
             <div class="text-center">
                 <h1 class="mt-8 text-4xl font-bold text-gray-900 dark:text-white sm:text-5xl">
