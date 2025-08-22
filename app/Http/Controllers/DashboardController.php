@@ -16,7 +16,7 @@ class DashboardController extends Controller
         $user = Auth::user();
 
         // Panggil API tim-mu untuk mendapatkan daftar semua PTN
-        //$ptnResponse = Http::get('http://127.0.0.1:8002/data/ptn');
+        // $ptnResponse = Http::get('http://127.0.0.1:8002/data/ptn');
 
         // Siapkan variabel untuk semua data yang akan dikirim ke view
         $viewData = [
