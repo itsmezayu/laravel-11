@@ -187,32 +187,7 @@
                 </div>
             </div>
 
-            {{-- FITUR EKSPLORASI PTN & PRODI --}}
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-4">🏛️ Eksplorasi Data PTN & Prodi</h3>
-
-                    @if (isset($ptnError))
-                        <p class="text-red-500">{{ $ptnError }}</p>
-                    @else
-                        <div class="">
-                            <x-input-label for="ptn_select" :value="__('Pilih Perguruan Tinggi Negeri')" />
-                            <select id="ptn_select"
-                                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm dark:bg-gray-900 dark:text-gray-300">
-                                <option value="">-- Pilih PTN --</option>
-                                @foreach ($ptnList as $ptn)
-                                    <option value="{{ $ptn['kode_ptn'] }}">{{ $ptn['nama_ptn'] }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        {{-- Area ini akan diisi dengan daftar prodi secara dinamis --}}
-                        <div id="prodi-list-container" class="mt-6 pt-6 border-t dark:border-gray-700">
-                            <p class="text-gray-500">Silakan pilih PTN untuk melihat daftar prodinya.</p>
-                        </div>
-                    @endif
-                </div>
-            </div>
+            
 
         </div>
     </div>
