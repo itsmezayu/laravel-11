@@ -15,12 +15,21 @@ class DashboardController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
+        // --- Logika Prakiraan Cuaca  ---
+        $weatherResponse = Http::get('https://api.open-meteo.com/v1/forecast', [
+            'latitude' => -7.2575, // Latitude Surabaya
+            'longitude' => 112.7521, // Longitude Surabaya
+            'daily' => 'temperature_2m_max,temperature_2m_min',
+            'timezone' => 'Asia/Jakarta',
+        ]);
+
         // Panggil API tim-mu untuk mendapatkan daftar semua PTN
         $ptnResponse = Http::get('http://127.0.0.1:8002/data/ptn');
 
         // Siapkan variabel untuk semua data yang akan dikirim ke view
         $viewData = [
             'userName' => $user->name,
+            'weatherData' => $weatherResponse->successful() ? $weatherResponse->json() : null,
             'country' => null,
             'countryError' => null,
             'analysisResults' => null,

@@ -214,6 +214,35 @@
                 </div>
             </div>
 
+            {{-- FITUR PRAKIRAAN CUACA --}}
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <h3 class="text-lg font-medium mb-4">☀️ Weather Forecast Surabaya</h3>
+
+                    @if (isset($weatherData['daily']))
+                        <div class="space-y-3">
+                            @foreach ($weatherData['daily']['time'] as $index => $date)
+                                <div
+                                    class="flex justify-between items-center bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
+                                    <div>
+                                        <p class="font-semibold">{{ \Carbon\Carbon::parse($date)->format('l, d M') }}
+                                        </p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-bold text-lg text-red-500">
+                                            {{ $weatherData['daily']['temperature_2m_max'][$index] }}&deg;C</p>
+                                        <p class="text-sm text-blue-400">
+                                            {{ $weatherData['daily']['temperature_2m_min'][$index] }}&deg;C</p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-gray-500">Gagal memuat data prakiraan cuaca.</p>
+                    @endif
+                </div>
+            </div>
+
         </div>
     </div>
 </x-app-layout>
