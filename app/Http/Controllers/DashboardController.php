@@ -15,8 +15,14 @@ class DashboardController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // Panggil API tim-mu untuk mendapatkan daftar semua PTN
+        // Ambil input akreditasi dari request, default-nya 'A'
+        $selectedAkreditasi = $request->input('akreditasi', '');
+
+        // API untuk mendapatkan daftar semua PTN
         $ptnResponse = Http::get('http://127.0.0.1:8002/data/ptn');
+
+        // API untuk mendapatkan daftar siswa eligible
+        $eligibleResponse = Http::get('http://127.0.0.1:8003/eligible', ['akreditasi' => '' . $selectedAkreditasi]);
 
         // --- Logika Prakiraan Cuaca  ---
         $weatherResponse = Http::get('https://api.open-meteo.com/v1/forecast', [
@@ -42,6 +48,10 @@ class DashboardController extends Controller
             'earthquakeData' => null,
             'ptnList' => $ptnResponse->successful() ? $ptnResponse->json() : [],
             'ptnError' => $ptnResponse->failed() ? 'Gagal memuat daftar PTN.' : null,
+            'eligibleStudents' => $eligibleResponse->successful() ? $eligibleResponse->json() : [],
+            'eligibleError' => $eligibleResponse->failed() ? 'Gagal memuat data siswa eligible.' : null,
+            'selectedAkreditasi' => $selectedAkreditasi, // Kirim akreditasi terpilih ke view
+
 
         ];
 

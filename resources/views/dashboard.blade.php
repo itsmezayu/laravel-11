@@ -243,6 +243,62 @@
                 </div>
             </div>
 
+            {{-- KARTU SISWA ELIGIBLE (INTERAKTIF) --}}
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    {{-- Header Kartu --}}
+                    <h3 class="text-lg font-medium mb-4">🎓 Siswa Eligible SNBP</h3>
+
+                    {{-- Form untuk memilih akreditasi --}}
+                    <form action="{{ route('dashboard') }}" method="GET" class="max-w-xs mb-6">
+                        <x-input-label for="akreditasi" :value="__('Pilih Akreditasi Sekolah')" />
+                        <select name="akreditasi" id="akreditasi" onchange="this.form.submit()"
+                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm dark:bg-gray-900 dark:text-gray-300">
+                            <option value="A" {{ $selectedAkreditasi == 'A' ? 'selected' : '' }}>Akreditasi A
+                                (40%)</option>
+                            <option value="B" {{ $selectedAkreditasi == 'B' ? 'selected' : '' }}>Akreditasi B
+                                (25%)</option>
+                            <option value="C" {{ $selectedAkreditasi == 'C' ? 'selected' : '' }}>Akreditasi C
+                                (5%)</option>
+                        </select>
+                    </form>
+
+                    {{-- Tabel Hasil --}}
+                    <div class="border-t dark:border-gray-700 pt-4">
+                        @if (isset($eligibleStudents) && !empty($eligibleStudents))
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                    <thead class="bg-gray-50 dark:bg-gray-700/50">
+                                        <tr>
+                                            <th
+                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                                                Nama Siswa</th>
+                                            <th
+                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                                                Rata-Rata Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                        @foreach ($eligibleStudents as $student)
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    {{ $student['nama_siswa'] ?? 'N/A' }}</td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    {{ $student['rata_total'] ?? 'N/A' }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @elseif (isset($eligibleError))
+                            <p class="text-red-500">{{ $eligibleError }}</p>
+                        @else
+                            <p class="text-gray-500">Tidak ada data siswa eligible untuk ditampilkan.</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </x-app-layout>
