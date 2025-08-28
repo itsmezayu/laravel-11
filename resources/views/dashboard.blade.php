@@ -224,7 +224,7 @@
                     @if (isset($ptnError))
                         <p class="text-red-500">{{ $ptnError }}</p>
                     @else
-                        <div class="">
+                        <div class="mb-4">
                             <x-input-label for="ptn_select" :value="__('Pilih Perguruan Tinggi Negeri')" />
                             <select id="ptn_select"
                                 class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm dark:bg-gray-900 dark:text-gray-300">
@@ -246,55 +246,22 @@
             {{-- KARTU SISWA ELIGIBLE (INTERAKTIF) --}}
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
-                    {{-- Header Kartu --}}
                     <h3 class="text-lg font-medium mb-4">🎓 Siswa Eligible SNBP</h3>
 
-                    {{-- Form untuk memilih akreditasi --}}
-                    <form action="{{ route('dashboard') }}" method="GET" class="max-w-xs mb-6">
-                        <x-input-label for="akreditasi" :value="__('Pilih Akreditasi Sekolah')" />
-                        <select name="akreditasi" id="akreditasi" onchange="this.form.submit()"
+                    <div class="mb-4">
+                        <x-input-label for="akreditasi_select" :value="__('Pilih Akreditasi Sekolah')" />
+                        <select id="akreditasi_select"
                             class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm dark:bg-gray-900 dark:text-gray-300">
-                            <option value="A" {{ $selectedAkreditasi == 'A' ? 'selected' : '' }}>Akreditasi A
-                                (40%)</option>
-                            <option value="B" {{ $selectedAkreditasi == 'B' ? 'selected' : '' }}>Akreditasi B
-                                (25%)</option>
-                            <option value="C" {{ $selectedAkreditasi == 'C' ? 'selected' : '' }}>Akreditasi C
-                                (5%)</option>
+                            <option value="">-- Pilih Akreditasi --</option>
+                            <option value="A">Akreditasi A (40%)</option>
+                            <option value="B">Akreditasi B (25%)</option>
+                            <option value="C">Akreditasi C (5%)</option>
                         </select>
-                    </form>
+                    </div>
 
-                    {{-- Tabel Hasil --}}
-                    <div class="border-t dark:border-gray-700 pt-4">
-                        @if (isset($eligibleStudents) && !empty($eligibleStudents))
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                    <thead class="bg-gray-50 dark:bg-gray-700/50">
-                                        <tr>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                                                Nama Siswa</th>
-                                            <th
-                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                                                Rata-Rata Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                                        @foreach ($eligibleStudents as $student)
-                                            <tr>
-                                                <td class="px-6 py-4 whitespace-nowrap">
-                                                    {{ $student['nama_siswa'] ?? 'N/A' }}</td>
-                                                <td class="px-6 py-4 whitespace-nowrap">
-                                                    {{ $student['rata_total'] ?? 'N/A' }}</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @elseif (isset($eligibleError))
-                            <p class="text-red-500">{{ $eligibleError }}</p>
-                        @else
-                            <p class="text-gray-500">Tidak ada data siswa eligible untuk ditampilkan.</p>
-                        @endif
+                    {{-- Area ini akan diisi dengan tabel siswa eligible --}}
+                    <div id="eligible-student-container" class="border-t dark:border-gray-700 pt-4">
+                        <p class="text-gray-500">Silakan pilih akreditasi untuk menampilkan daftar siswa.</p>
                     </div>
                 </div>
             </div>
@@ -307,8 +274,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {{-- Inisialisasi Chart.js untuk menampilkan data gempa bumi --}}
 <script>
+    // Ambil data gempa dari variabel yang di-passing dari controller
     const earthquakeData = @json($earthquakeData ?? null);
-
     if (earthquakeData) {
         const ctx = document.getElementById('earthquakeChart');
 
@@ -491,5 +458,59 @@
                 fetchAndDisplayProdi(url.pathname + url.search);
             }
         });
+
+        // Logika BARU untuk Siswa Eligible
+        const akreditasiSelect = document.getElementById('akreditasi_select');
+        const eligibleContainer = document.getElementById('eligible-student-container');
+
+        akreditasiSelect.addEventListener('change', function() {
+            const selectedAkreditasi = this.value;
+
+            if (!selectedAkreditasi) {
+                eligibleContainer.innerHTML =
+                    '<p class="text-gray-500">Silakan pilih akreditasi untuk menampilkan daftar siswa.</p>';
+                return;
+            }
+
+            eligibleContainer.innerHTML = '<p class="text-gray-500">Memuat data siswa...</p>';
+
+            fetch(`/api/eligible-students?akreditasi=${selectedAkreditasi}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error || data.length === 0) {
+                        eligibleContainer.innerHTML =
+                            '<p class="text-gray-500">Data tidak ditemukan.</p>';
+                        return;
+                    }
+
+                    let tableHtml = `<div class="overflow-x-auto"><table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-700/50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">NISN</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Nama Siswa</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Rata-Rata Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">`;
+
+                    data.forEach(student => {
+                        tableHtml += `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">${student.id_siswa ? student.id_siswa : ''}
+                            <td class="px-6 py-4 whitespace-nowrap">${student.nama_siswa ?? 'N/A'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${student.rata_total ?? 'N/A'}</td>
+                        </tr>
+                    `;
+                    });
+
+                    tableHtml += `</tbody></table></div>`;
+                    eligibleContainer.innerHTML = tableHtml;
+                })
+                .catch(error => {
+                    eligibleContainer.innerHTML =
+                        '<p class="text-red-500">Terjadi kesalahan saat memuat data.</p>';
+                });
+        });
+
     });
 </script>
