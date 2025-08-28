@@ -15,12 +15,10 @@ class DashboardController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // Ambil input akreditasi dari request, default-nya 'A'
-        $selectedAkreditasi = $request->input('akreditasi', '');
-
         // API untuk mendapatkan daftar semua PTN
         $ptnResponse = Http::get('http://127.0.0.1:8002/data/ptn');
-
+        // Ambil input akreditasi dari request, default-nya 'A'
+        $selectedAkreditasi = $request->input('akreditasi', '');
         // API untuk mendapatkan daftar siswa eligible
         $eligibleResponse = Http::get('http://127.0.0.1:8003/eligible', ['akreditasi' => '' . $selectedAkreditasi]);
 
