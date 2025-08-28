@@ -459,14 +459,17 @@
             }
         });
 
-        // Logika BARU untuk Siswa Eligible
+        // Logika untuk Siswa Eligible
         const akreditasiSelect = document.getElementById('akreditasi_select');
         const eligibleContainer = document.getElementById('eligible-student-container');
 
-        akreditasiSelect.addEventListener('change', function() {
-            const selectedAkreditasi = this.value;
+        let eligibleSort = {
+            by: 'nama_siswa',
+            direction: 'asc'
+        };
 
-            if (!selectedAkreditasi) {
+        function fetchAndDisplayEligible(url) {
+            if (!akreditasiSelect.value) {
                 eligibleContainer.innerHTML =
                     '<p class="text-gray-500">Silakan pilih akreditasi untuk menampilkan daftar siswa.</p>';
                 return;
@@ -474,7 +477,7 @@
 
             eligibleContainer.innerHTML = '<p class="text-gray-500">Memuat data siswa...</p>';
 
-            fetch(`/api/eligible-students?akreditasi=${selectedAkreditasi}`)
+            fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     if (data.error || data.length === 0) {
@@ -483,20 +486,50 @@
                         return;
                     }
 
+                    // Sorting client-side jika API tidak support, jika support, gunakan API param
+                    let sortedData = [...data];
+                    sortedData.sort((a, b) => {
+                        let key = eligibleSort.by;
+                        let dir = eligibleSort.direction === 'asc' ? 1 : -1;
+                        let valA = a[key] ?? '';
+                        let valB = b[key] ?? '';
+                        // Numeric sort for rata_total and id_siswa
+                        if (key === 'rata_total') {
+                            valA = parseFloat(valA) || 0;
+                            valB = parseFloat(valB) || 0;
+                        }
+                        if (key === 'id_siswa') {
+                            valA = valA.toString();
+                            valB = valB.toString();
+                        }
+                        if (valA < valB) return -1 * dir;
+                        if (valA > valB) return 1 * dir;
+                        return 0;
+                    });
+
                     let tableHtml = `<div class="overflow-x-auto"><table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-700/50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">NISN</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Nama Siswa</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Rata-Rata Total</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase cursor-pointer" data-sort="id_siswa">
+                                NISN
+                                <span id="eligible-sort-icon-id_siswa"></span>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase cursor-pointer" data-sort="nama_siswa">
+                                Nama Siswa
+                                <span id="eligible-sort-icon-nama_siswa"></span>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase cursor-pointer" data-sort="rata_total">
+                                Rata-Rata Total
+                                <span id="eligible-sort-icon-rata_total"></span>
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">`;
 
-                    data.forEach(student => {
+                    sortedData.forEach(student => {
                         tableHtml += `
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">${student.id_siswa ? student.id_siswa : ''}
+                            <td class="px-6 py-4 whitespace-nowrap">${student.id_siswa ? student.id_siswa : ''}</td>
                             <td class="px-6 py-4 whitespace-nowrap">${student.nama_siswa ?? 'N/A'}</td>
                             <td class="px-6 py-4 whitespace-nowrap">${student.rata_total ?? 'N/A'}</td>
                         </tr>
@@ -505,11 +538,48 @@
 
                     tableHtml += `</tbody></table></div>`;
                     eligibleContainer.innerHTML = tableHtml;
+
+                    // Update sort icon
+                    document.querySelectorAll('#eligible-student-container thead th span').forEach(span =>
+                        span.textContent = '');
+                    const iconSpan = document.getElementById(`eligible-sort-icon-${eligibleSort.by}`);
+                    if (iconSpan) {
+                        iconSpan.textContent = eligibleSort.direction === 'asc' ? ' ▲' : ' ▼';
+                    }
                 })
                 .catch(error => {
                     eligibleContainer.innerHTML =
                         '<p class="text-red-500">Terjadi kesalahan saat memuat data.</p>';
                 });
+        }
+
+        akreditasiSelect.addEventListener('change', function() {
+            const selectedAkreditasi = this.value;
+            eligibleSort = {
+                by: 'nama_siswa',
+                direction: 'asc'
+            };
+            if (!selectedAkreditasi) {
+                eligibleContainer.innerHTML =
+                    '<p class="text-gray-500">Silakan pilih akreditasi untuk menampilkan daftar siswa.</p>';
+                return;
+            }
+            fetchAndDisplayEligible(`/api/eligible-students?akreditasi=${selectedAkreditasi}`);
+        });
+
+        eligibleContainer.addEventListener('click', function(e) {
+            const header = e.target.closest('th[data-sort]');
+            if (!header) return;
+            const sortBy = header.dataset.sort;
+            if (eligibleSort.by === sortBy) {
+                eligibleSort.direction = eligibleSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                eligibleSort.by = sortBy;
+                eligibleSort.direction = 'asc';
+            }
+            const selectedAkreditasi = akreditasiSelect.value;
+            if (!selectedAkreditasi) return;
+            fetchAndDisplayEligible(`/api/eligible-students?akreditasi=${selectedAkreditasi}`);
         });
 
     });

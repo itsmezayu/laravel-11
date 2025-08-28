@@ -21,7 +21,16 @@ class EligibleStudentController extends Controller
         ]);
 
         if ($response->successful()) {
-            return response()->json($response->json());
+            $data = $response->json();
+
+            // Sorting berdasarkan nama (atau ganti dengan field lain jika perlu)
+            if (is_array($data)) {
+                usort($data, function ($a, $b) {
+                    return strcmp($a['nama'] ?? '', $b['nama'] ?? '');
+                });
+            }
+
+            return response()->json($data);
         }
 
         return response()->json(['error' => 'Gagal mengambil data.'], 500);
