@@ -10,4 +10,3 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 Route::get('/ptn/{ptnId}/prodi', [PtnProdiController::class, 'getProdiByPtn']);
 Route::get('/eligible-students', [EligibleStudentController::class, 'getEligibleStudents']);
-
