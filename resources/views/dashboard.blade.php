@@ -9,263 +9,270 @@
     {{-- Main Content --}}
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            {{-- KOTAK SAPAAN PENGGUNA --}}
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium">Selamat datang, {{ $userName }}!</h3>
-                </div>
-            </div>
-
-            {{-- FITUR PENCARI INFO NEGARA --}}
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-4">🌎 Pencari Info Negara</h3>
-                    <form action="{{ route('dashboard') }}" method="GET" class="mb-6">
-                        <div class="flex items-center gap-2">
-                            <x-text-input name="search_country" class="block w-full" type="text"
-                                placeholder="Ketik nama negara (e.g., Japan)" :value="request('search_country')" />
-                            <x-primary-button type="submit">{{ __('Cari') }}</x-primary-button>
-                        </div>
-                    </form>
-                    @if (isset($country))
-                        <div class="bg-gray-50 dark:bg-gray-700/50 shadow-inner rounded-lg p-6">
-                            <img src="{{ $country['flags']['svg'] }}" alt="Bendera {{ $country['name']['common'] }}"
-                                class="w-1/3 border dark:border-gray-600 mb-4">
-                            <h2 class="text-3xl font-bold">{{ $country['name']['official'] }}</h2>
-                            <p class="text-xl text-gray-600 dark:text-gray-400 mb-4">{{ $country['name']['common'] }}
-                            </p>
-                            <div class="space-y-2">
-                                <p><strong>Ibu Kota:</strong> {{ $country['capital'][0] ?? 'N/A' }}</p>
-                                <p><strong>Populasi:</strong> {{ number_format($country['population']) }} jiwa</p>
-                                <p><strong>Region:</strong> {{ $country['region'] }}
-                                    ({{ $country['subregion'] ?? '' }})</p>
-                            </div>
-                        </div>
-                    @elseif (isset($countryError))
-                        <div class="bg-red-100 dark:bg-red-900/50 border border-red-400 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg relative"
-                            role="alert">
-                            <strong class="font-bold">Oops!</strong>
-                            <span class="block sm:inline">{{ $countryError }}</span>
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            {{-- FITUR KAMUS CERDAS --}}
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-4">📖 Kamus Cerdas</h3>
-                    <form action="{{ route('dashboard') }}" method="GET" class="mb-6">
-                        <div class="flex items-center gap-2">
-                            <x-text-input name="search_word" class="block w-full" type="text"
-                                placeholder="Ketik kata bahasa Inggris (e.g., success)" :value="request('search_word')" />
-                            <x-primary-button type="submit">{{ __('Cari') }}</x-primary-button>
-                        </div>
-                    </form>
-                    @if (isset($wordData))
-                        @foreach ($wordData as $entry)
-                            <div class="bg-gray-50 dark:bg-gray-700/50 shadow-inner rounded-lg p-6 space-y-4 mb-[15px]">
-                                <div class="flex items-center gap-4 flex-wrap">
-                                    <h2 class="text-3xl font-bold">{{ $entry['word'] }}</h2>
-                                    <span
-                                        class="text-xl text-gray-600 dark:text-gray-400">{{ $entry['phonetic'] ?? '' }}</span>
-                                    @foreach ($entry['phonetics'] as $phonetic)
-                                        @if (isset($phonetic['audio']) && $phonetic['audio'])
-                                            <audio controls src="{{ $phonetic['audio'] }}" class="h-8"></audio>
-                                            @break
-                                        @endif
-                                    @endforeach
-                                </div>
-                                @foreach ($entry['meanings'] as $meaning)
-                                    <div class="pt-4 border-t dark:border-gray-600">
-                                        <h4 class="font-bold italic">{{ $meaning['partOfSpeech'] }}</h4>
-                                        <ul class="list-disc list-inside mt-2 space-y-1">
-                                            @foreach ($meaning['definitions'] as $definition)
-                                                <li>{{ $definition['definition'] }}</li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endforeach
-                    @elseif (isset($wordError))
-                        <div class="bg-red-100 dark:bg-red-900/50 border border-red-400 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg relative"
-                            role="alert">
-                            <strong class="font-bold">Oops!</strong>
-                            <span class="block sm:inline">{{ $wordError }}</span>
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            {{-- FITUR TEXT ANALYZER (PYTHON SERVICE) --}}
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-4">🐍 Text Analyzer</h3>
-                    <form action="{{ route('dashboard') }}" method="POST">
-                        @csrf
-                        <textarea name="text_content" rows="8"
-                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm dark:bg-gray-900 dark:text-white">{{ $originalText ?? '' }}</textarea>
-                        <x-primary-button type="submit" class="mt-4">{{ __('Analisis Teks') }}</x-primary-button>
-                    </form>
-                    @if (isset($analysisResults))
-                        <div
-                            class="mt-6 pt-6 border-t dark:border-gray-700 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                            <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
-                                <div class="text-sm uppercase text-gray-500 dark:text-gray-400">Jumlah Karakter</div>
-                                <div class="text-3xl font-bold">{{ $analysisResults['char_count'] }}</div>
-                            </div>
-                            <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
-                                <div class="text-sm uppercase text-gray-500 dark:text-gray-400">Jumlah Kata</div>
-                                <div class="text-3xl font-bold">{{ $analysisResults['word_count'] }}</div>
-                            </div>
-                            <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
-                                <div class="text-sm uppercase text-gray-500 dark:text-gray-400">Estimasi Waktu Baca
-                                </div>
-                                <div class="text-3xl font-bold">{{ $analysisResults['reading_time_minutes'] }} Menit
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            {{-- FITUR LOREM IPSUM GENERATOR --}}
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-4">✍️ Lorem Ipsum Generator</h3>
-                    <form action="{{ route('dashboard') }}" method="GET" class=" mb-6">
-                        <input type="hidden" name="generate_lorem" value="1">
-
-                        {{-- Input untuk Jumlah --}}
-                        <div class="mb-4">
-                            <x-input-label for="generate_count" :value="__('Jumlah')" />
-                            <x-text-input id="generate_count" name="generate_count" type="number"
-                                class="mt-1 block w-full" :value="request('generate_count', 3)" min="1" max="100" />
-                        </div>
-
-                        {{-- Pilihan Tipe (Paragraf atau Kalimat) --}}
-                        <div class="mb-4">
-                            <x-input-label :value="__('Generate Berdasarkan')" />
-                            <div class="mt-2 flex items-center space-x-6">
-                                <label class="flex items-center">
-                                    <input type="radio" name="generate_type" value="paragraphs"
-                                        class="dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800"
-                                        {{ request('generate_type', 'paragraphs') == 'paragraphs' ? 'checked' : '' }}>
-                                    <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">Paragraf</span>
-                                </label>
-                                <label class="flex items-center">
-                                    <input type="radio" name="generate_type" value="sentences"
-                                        class="dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800"
-                                        {{ request('generate_type') == 'sentences' ? 'checked' : '' }}>
-                                    <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">Kalimat</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <x-primary-button type="submit">{{ __('Generate') }}</x-primary-button>
-                    </form>
-
-                    {{-- Area Hasil --}}
-                    @if (isset($loremText))
-                        <div class="mt-6 pt-6 border-t dark:border-gray-700 prose dark:prose-invert max-w-none">
-                            @foreach ($loremText as $text)
-                                <p>{{ $text }}</p>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            {{-- FITUR CHART GEMPA BUMI --}}
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-4">🌋 Gempa Bumi - 7 Hari Terakhir</h3>
-                    <div>
-                        <canvas id="earthquakeChart"></canvas>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {{-- KOTAK SAPAAN PENGGUNA --}}
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg md:col-span-2">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-lg font-medium">Selamat datang, {{ $userName }}!</h3>
                     </div>
                 </div>
-            </div>
 
-            {{-- FITUR PRAKIRAAN CUACA --}}
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-4">☀️ Weather Forecast Surabaya</h3>
+                {{-- FITUR PENCARI INFO NEGARA --}}
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-lg font-medium mb-4">🌎 Pencari Info Negara</h3>
+                        <form action="{{ route('dashboard') }}" method="GET" class="mb-6">
+                            <div class="flex items-center gap-2">
+                                <x-text-input name="search_country" class="block w-full" type="text"
+                                    placeholder="Ketik nama negara (e.g., Japan)" :value="request('search_country')" />
+                                <x-primary-button type="submit">{{ __('Cari') }}</x-primary-button>
+                            </div>
+                        </form>
+                        @if (isset($country))
+                            <div class="bg-gray-50 dark:bg-gray-700/50 shadow-inner rounded-lg p-6">
+                                <img src="{{ $country['flags']['svg'] }}" alt="Bendera {{ $country['name']['common'] }}"
+                                    class="w-1/3 border dark:border-gray-600 mb-4">
+                                <h2 class="text-3xl font-bold">{{ $country['name']['official'] }}</h2>
+                                <p class="text-xl text-gray-600 dark:text-gray-400 mb-4">
+                                    {{ $country['name']['common'] }}
+                                </p>
+                                <div class="space-y-2">
+                                    <p><strong>Ibu Kota:</strong> {{ $country['capital'][0] ?? 'N/A' }}</p>
+                                    <p><strong>Populasi:</strong> {{ number_format($country['population']) }} jiwa</p>
+                                    <p><strong>Region:</strong> {{ $country['region'] }}
+                                        ({{ $country['subregion'] ?? '' }})</p>
+                                </div>
+                            </div>
+                        @elseif (isset($countryError))
+                            <div class="bg-red-100 dark:bg-red-900/50 border border-red-400 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg relative"
+                                role="alert">
+                                <strong class="font-bold">Oops!</strong>
+                                <span class="block sm:inline">{{ $countryError }}</span>
+                            </div>
+                        @endif
+                    </div>
+                </div>
 
-                    @if (isset($weatherData['daily']))
-                        <div class="space-y-3">
-                            @foreach ($weatherData['daily']['time'] as $index => $date)
+                {{-- FITUR KAMUS CERDAS --}}
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-lg font-medium mb-4">📖 Kamus Cerdas</h3>
+                        <form action="{{ route('dashboard') }}" method="GET" class="mb-6">
+                            <div class="flex items-center gap-2">
+                                <x-text-input name="search_word" class="block w-full" type="text"
+                                    placeholder="Ketik kata bahasa Inggris (e.g., success)" :value="request('search_word')" />
+                                <x-primary-button type="submit">{{ __('Cari') }}</x-primary-button>
+                            </div>
+                        </form>
+                        @if (isset($wordData))
+                            @foreach ($wordData as $entry)
                                 <div
-                                    class="flex justify-between items-center bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
-                                    <div>
-                                        <p class="font-semibold">{{ \Carbon\Carbon::parse($date)->format('l, d M') }}
-                                        </p>
+                                    class="bg-gray-50 dark:bg-gray-700/50 shadow-inner rounded-lg p-6 space-y-4 mb-[15px]">
+                                    <div class="flex items-center gap-4 flex-wrap">
+                                        <h2 class="text-3xl font-bold">{{ $entry['word'] }}</h2>
+                                        <span
+                                            class="text-xl text-gray-600 dark:text-gray-400">{{ $entry['phonetic'] ?? '' }}</span>
+                                        @foreach ($entry['phonetics'] as $phonetic)
+                                            @if (isset($phonetic['audio']) && $phonetic['audio'])
+                                                <audio controls src="{{ $phonetic['audio'] }}" class="h-8"></audio>
+                                                @break
+                                            @endif
+                                        @endforeach
                                     </div>
-                                    <div class="text-right">
-                                        <p class="font-bold text-lg text-red-500">
-                                            {{ $weatherData['daily']['temperature_2m_max'][$index] }}&deg;C</p>
-                                        <p class="text-sm text-blue-400">
-                                            {{ $weatherData['daily']['temperature_2m_min'][$index] }}&deg;C</p>
-                                    </div>
+                                    @foreach ($entry['meanings'] as $meaning)
+                                        <div class="pt-4 border-t dark:border-gray-600">
+                                            <h4 class="font-bold italic">{{ $meaning['partOfSpeech'] }}</h4>
+                                            <ul class="list-disc list-inside mt-2 space-y-1">
+                                                @foreach ($meaning['definitions'] as $definition)
+                                                    <li>{{ $definition['definition'] }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endforeach
                                 </div>
                             @endforeach
-                        </div>
-                    @else
-                        <p class="text-gray-500">Gagal memuat data prakiraan cuaca.</p>
-                    @endif
+                        @elseif (isset($wordError))
+                            <div class="bg-red-100 dark:bg-red-900/50 border border-red-400 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg relative"
+                                role="alert">
+                                <strong class="font-bold">Oops!</strong>
+                                <span class="block sm:inline">{{ $wordError }}</span>
+                            </div>
+                        @endif
+                    </div>
                 </div>
-            </div>
 
-            {{-- FITUR EKSPLORASI PTN & PRODI --}}
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-4">🏛️ Eksplorasi Data PTN & Prodi</h3>
+                {{-- FITUR TEXT ANALYZER (PYTHON SERVICE) --}}
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-lg font-medium mb-4">🐍 Text Analyzer</h3>
+                        <form action="{{ route('dashboard') }}" method="POST">
+                            @csrf
+                            <textarea name="text_content" rows="8"
+                                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm dark:bg-gray-900 dark:text-white">{{ $originalText ?? '' }}</textarea>
+                            <x-primary-button type="submit"
+                                class="mt-4">{{ __('Analisis Teks') }}</x-primary-button>
+                        </form>
+                        @if (isset($analysisResults))
+                            <div
+                                class="mt-6 pt-6 border-t dark:border-gray-700 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                                    <div class="text-sm uppercase text-gray-500 dark:text-gray-400">Jumlah Karakter
+                                    </div>
+                                    <div class="text-3xl font-bold">{{ $analysisResults['char_count'] }}</div>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                                    <div class="text-sm uppercase text-gray-500 dark:text-gray-400">Jumlah Kata</div>
+                                    <div class="text-3xl font-bold">{{ $analysisResults['word_count'] }}</div>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                                    <div class="text-sm uppercase text-gray-500 dark:text-gray-400">Estimasi Waktu Baca
+                                    </div>
+                                    <div class="text-3xl font-bold">{{ $analysisResults['reading_time_minutes'] }}
+                                        Menit
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
 
-                    @if (isset($ptnError))
-                        <p class="text-red-500">{{ $ptnError }}</p>
-                    @else
-                        <div class="mb-4">
-                            <x-input-label for="ptn_select" :value="__('Pilih Perguruan Tinggi Negeri')" />
-                            <select id="ptn_select"
-                                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm dark:bg-gray-900 dark:text-gray-300">
-                                <option value="">-- Pilih PTN --</option>
-                                @foreach ($ptnList as $ptn)
-                                    <option value="{{ $ptn['kode_ptn'] }}">{{ $ptn['nama_ptn'] }}</option>
+                {{-- FITUR LOREM IPSUM GENERATOR --}}
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-lg font-medium mb-4">✍️ Lorem Ipsum Generator</h3>
+                        <form action="{{ route('dashboard') }}" method="GET" class=" mb-6">
+                            <input type="hidden" name="generate_lorem" value="1">
+
+                            {{-- Input untuk Jumlah --}}
+                            <div class="mb-4">
+                                <x-input-label for="generate_count" :value="__('Jumlah')" />
+                                <x-text-input id="generate_count" name="generate_count" type="number"
+                                    class="mt-1 block w-full" :value="request('generate_count', 3)" min="1" max="100" />
+                            </div>
+
+                            {{-- Pilihan Tipe (Paragraf atau Kalimat) --}}
+                            <div class="mb-4">
+                                <x-input-label :value="__('Generate Berdasarkan')" />
+                                <div class="mt-2 flex items-center space-x-6">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="generate_type" value="paragraphs"
+                                            class="dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800"
+                                            {{ request('generate_type', 'paragraphs') == 'paragraphs' ? 'checked' : '' }}>
+                                        <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">Paragraf</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="generate_type" value="sentences"
+                                            class="dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800"
+                                            {{ request('generate_type') == 'sentences' ? 'checked' : '' }}>
+                                        <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">Kalimat</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <x-primary-button type="submit">{{ __('Generate') }}</x-primary-button>
+                        </form>
+
+                        {{-- Area Hasil --}}
+                        @if (isset($loremText))
+                            <div class="mt-6 pt-6 border-t dark:border-gray-700 prose dark:prose-invert max-w-none">
+                                @foreach ($loremText as $text)
+                                    <p>{{ $text }}</p>
                                 @endforeach
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- FITUR PRAKIRAAN CUACA --}}
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-lg font-medium mb-4">☀️ Weather Forecast Surabaya</h3>
+
+                        @if (isset($weatherData['daily']))
+                            <div class="space-y-3">
+                                @foreach ($weatherData['daily']['time'] as $index => $date)
+                                    <div
+                                        class="flex justify-between items-center bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
+                                        <div>
+                                            <p class="font-semibold">
+                                                {{ \Carbon\Carbon::parse($date)->format('l, d M') }}
+                                            </p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="font-bold text-lg text-red-500">
+                                                {{ $weatherData['daily']['temperature_2m_max'][$index] }}&deg;C</p>
+                                            <p class="text-sm text-blue-400">
+                                                {{ $weatherData['daily']['temperature_2m_min'][$index] }}&deg;C</p>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-gray-500">Gagal memuat data prakiraan cuaca.</p>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- FITUR CHART GEMPA BUMI --}}
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg md:col-span-2">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-lg font-medium mb-4">🌋 Gempa Bumi - 7 Hari Terakhir</h3>
+                        <div>
+                            <canvas id="earthquakeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- FITUR EKSPLORASI PTN & PRODI --}}
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg md:col-span-2">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-lg font-medium mb-4">🏛️ Eksplorasi Data PTN & Prodi</h3>
+
+                        @if (isset($ptnError))
+                            <p class="text-red-500">{{ $ptnError }}</p>
+                        @else
+                            <div class="mb-4">
+                                <x-input-label for="ptn_select" :value="__('Pilih Perguruan Tinggi Negeri')" />
+                                <select id="ptn_select"
+                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm dark:bg-gray-900 dark:text-gray-300">
+                                    <option value="">-- Pilih PTN --</option>
+                                    @foreach ($ptnList as $ptn)
+                                        <option value="{{ $ptn['kode_ptn'] }}">{{ $ptn['nama_ptn'] }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- Area ini akan diisi dengan daftar prodi secara dinamis --}}
+                            <div id="prodi-list-container" class="mt-6 pt-6 border-t dark:border-gray-700">
+                                <p class="text-gray-500">Silakan pilih PTN untuk melihat daftar prodinya.</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- KARTU SISWA ELIGIBLE (INTERAKTIF) --}}
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg md:col-span-2">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-lg font-medium mb-4">🎓 Siswa Eligible SNBP</h3>
+
+                        <div class="mb-4">
+                            <x-input-label for="akreditasi_select" :value="__('Pilih Akreditasi Sekolah')" />
+                            <select id="akreditasi_select"
+                                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm dark:bg-gray-900 dark:text-gray-300">
+                                <option value="">-- Pilih Akreditasi --</option>
+                                <option value="A">Akreditasi A (40%)</option>
+                                <option value="B">Akreditasi B (25%)</option>
+                                <option value="C">Akreditasi C (5%)</option>
                             </select>
                         </div>
 
-                        {{-- Area ini akan diisi dengan daftar prodi secara dinamis --}}
-                        <div id="prodi-list-container" class="mt-6 pt-6 border-t dark:border-gray-700">
-                            <p class="text-gray-500">Silakan pilih PTN untuk melihat daftar prodinya.</p>
+                        {{-- Area ini akan diisi dengan tabel siswa eligible --}}
+                        <div id="eligible-student-container" class="border-t dark:border-gray-700 pt-4">
+                            <p class="text-gray-500">Silakan pilih akreditasi untuk menampilkan daftar siswa.</p>
                         </div>
-                    @endif
-                </div>
-            </div>
-
-            {{-- KARTU SISWA ELIGIBLE (INTERAKTIF) --}}
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3 class="text-lg font-medium mb-4">🎓 Siswa Eligible SNBP</h3>
-
-                    <div class="mb-4">
-                        <x-input-label for="akreditasi_select" :value="__('Pilih Akreditasi Sekolah')" />
-                        <select id="akreditasi_select"
-                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm dark:bg-gray-900 dark:text-gray-300">
-                            <option value="">-- Pilih Akreditasi --</option>
-                            <option value="A">Akreditasi A (40%)</option>
-                            <option value="B">Akreditasi B (25%)</option>
-                            <option value="C">Akreditasi C (5%)</option>
-                        </select>
-                    </div>
-
-                    {{-- Area ini akan diisi dengan tabel siswa eligible --}}
-                    <div id="eligible-student-container" class="border-t dark:border-gray-700 pt-4">
-                        <p class="text-gray-500">Silakan pilih akreditasi untuk menampilkan daftar siswa.</p>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </x-app-layout>
