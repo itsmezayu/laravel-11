@@ -147,7 +147,7 @@
                             {{-- Input untuk Jumlah --}}
                             <div class="mb-4 flex items-center gap-2">
                                 <x-text-input id="generate_count" name="generate_count" type="number"
-                                    class="mt-1 block w-full" :value="request('generate_count', 3)" min="1" max="100" />
+                                    class="mt-1 block w-full" :value="request('generate_count', 1)" min="1" max="100" />
                                 <x-primary-button type="submit">{{ __('Generate') }}</x-primary-button>
                             </div>
                             {{-- Pilihan Tipe (Paragraf atau Kalimat) --}}
