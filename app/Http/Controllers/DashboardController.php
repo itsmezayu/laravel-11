@@ -55,7 +55,6 @@ class DashboardController extends Controller
             'apodData' => $apodResponse->successful() ? $apodResponse->json() : null,
             'apodError' => $apodResponse->failed() ? 'Gagal memuat data dari NASA.' : null,
 
-
         ];
 
         // --- Logika Pencarian Negara ---
