@@ -30,10 +30,16 @@ class DashboardController extends Controller
             'timezone' => 'Asia/Jakarta',
         ]);
 
-        // --- Logika NASA APOD ---
-        $apodResponse = Http::withoutVerifying()->get('https://api.nasa.gov/planetary/apod', [
-            'api_key' => 'DEMO_KEY' // Menggunakan kunci demo dari NASA
+        // --- Logika Random User Generator ---
+        $randomUserResponse = Http::withoutVerifying()->get('https://api.randomuser.me/api/', [
+            'nat' => 'us' // Opsional: batasi kebangsaan agar nama lebih familiar
         ]);
+
+        $userData = null;
+        if ($randomUserResponse->successful()) {
+            // API mengembalikan array 'results', kita ambil elemen pertamanya
+            $userData = $randomUserResponse->json()['results'][0] ?? null;
+        }
 
         // --- Data yang akan dikirim ke view ---
         $viewData = [
@@ -52,8 +58,8 @@ class DashboardController extends Controller
             'eligibleStudents' => $eligibleResponse->successful() ? $eligibleResponse->json() : [],
             'eligibleError' => $eligibleResponse->failed() ? 'Gagal memuat data siswa eligible.' : null,
             'selectedAkreditasi' => $selectedAkreditasi,
-            'apodData' => $apodResponse->successful() ? $apodResponse->json() : null,
-            'apodError' => $apodResponse->failed() ? 'Gagal memuat data dari NASA.' : null,
+            'randomUser' => $userData,
+            'randomUserError' => $randomUserResponse->failed() || is_null($userData) ? 'Gagal memuat profil pengguna acak.' : null,
 
         ];
 
