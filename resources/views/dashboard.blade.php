@@ -101,7 +101,7 @@
                     </div>
                 </div>
 
-                {{-- FITUR TEXT ANALYZER (PYTHON SERVICE) --}}
+                {{-- FITUR TEXT ANALYZER --}}
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <h3 class="text-lg font-medium mb-4">🐍 Text Analyzer</h3>
@@ -213,6 +213,48 @@
                     </div>
                 </div>
 
+                {{-- FITUR NASA ASTRONOMY PICTURE OF THE DAY --}}
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-lg font-medium mb-4">🔭 Gambar Astronomi Hari Ini dari NASA</h3>
+
+                        @if (isset($apodData))
+                            <div class="bg-gray-50 dark:bg-gray-700/50 shadow-inner rounded-lg p-6">
+                                <h4 class="text-2xl font-bold mb-2">{{ $apodData['title'] }}</h4>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                    {{ \Carbon\Carbon::parse($apodData['date'])->format('d F Y') }}
+                                    @if (isset($apodData['copyright']))
+                                        - © {{ $apodData['copyright'] }}
+                                    @endif
+                                </p>
+
+                                @if ($apodData['media_type'] === 'image')
+                                    <img src="{{ $apodData['hdurl'] ?? $apodData['url'] }}"
+                                        alt="{{ $apodData['title'] }}"
+                                        class="rounded-lg shadow-md w-full h-auto object-cover mb-4">
+                                @elseif ($apodData['media_type'] === 'video')
+                                    <div class="aspect-w-16 aspect-h-9 mb-4">
+                                        <iframe src="{{ $apodData['url'] }}" frameborder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen class="rounded-lg w-full h-full">
+                                        </iframe>
+                                    </div>
+                                @endif
+
+                                <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                    {{ $apodData['explanation'] }}
+                                </p>
+                            </div>
+                        @elseif (isset($apodError))
+                            <div class="bg-red-100 dark:bg-red-900/50 border border-red-400 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg relative"
+                                role="alert">
+                                <strong class="font-bold">Oops!</strong>
+                                <span class="block sm:inline">{{ $apodError }}</span>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
                 {{-- FITUR CHART GEMPA BUMI --}}
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg md:col-span-2">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
@@ -250,7 +292,7 @@
                     </div>
                 </div>
 
-                {{-- KARTU SISWA ELIGIBLE (INTERAKTIF) --}}
+                {{-- KARTU SISWA ELIGIBLE --}}
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg md:col-span-2">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <h3 class="text-lg font-medium mb-4">🎓 Siswa Eligible SNBP</h3>

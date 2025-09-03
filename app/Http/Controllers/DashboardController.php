@@ -30,9 +30,12 @@ class DashboardController extends Controller
             'timezone' => 'Asia/Jakarta',
         ]);
 
+        // --- Logika NASA APOD ---
+        $apodResponse = Http::withoutVerifying()->get('https://api.nasa.gov/planetary/apod', [
+            'api_key' => 'DEMO_KEY' // Menggunakan kunci demo dari NASA
+        ]);
 
-
-        // Siapkan variabel untuk semua data yang akan dikirim ke view
+        // --- Data yang akan dikirim ke view ---
         $viewData = [
             'userName' => $user->name,
             'weatherData' => $weatherResponse->successful() ? $weatherResponse->json() : null,
@@ -48,7 +51,9 @@ class DashboardController extends Controller
             'ptnError' => $ptnResponse->failed() ? 'Gagal memuat daftar PTN.' : null,
             'eligibleStudents' => $eligibleResponse->successful() ? $eligibleResponse->json() : [],
             'eligibleError' => $eligibleResponse->failed() ? 'Gagal memuat data siswa eligible.' : null,
-            'selectedAkreditasi' => $selectedAkreditasi, // Kirim akreditasi terpilih ke view
+            'selectedAkreditasi' => $selectedAkreditasi,
+            'apodData' => $apodResponse->successful() ? $apodResponse->json() : null,
+            'apodError' => $apodResponse->failed() ? 'Gagal memuat data dari NASA.' : null,
 
 
         ];
@@ -116,6 +121,7 @@ class DashboardController extends Controller
             'minmagnitude' => 5.0 // Ganti dengan nilai magnitudo yang diinginkan
         ]);
 
+        // Jika panggilan API berhasil, proses data untuk chart
         if ($response->successful()) {
             $earthquakes = $response->json()['features'];
             $labels = [];
