@@ -189,7 +189,7 @@
                         <h3 class="text-lg font-medium mb-4">☀️ Weather Forecast Surabaya</h3>
 
                         @if (isset($weatherData['daily']))
-                            <div class="space-y-3">
+                            <div class="space-y-3 max-h-[32rem] overflow-y-auto pr-2">
                                 @foreach ($weatherData['daily']['time'] as $index => $date)
                                     <div
                                         class="flex justify-between items-center bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
@@ -213,51 +213,33 @@
                     </div>
                 </div>
 
-                {{-- FITUR RANDOM USER PROFILE GENERATOR --}}
+                {{-- (BARU) FITUR LIBUR NASIONAL --}}
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-medium">👤 Generator Profil Pengguna Acak</h3>
-                            {{-- Tombol ini hanya akan me-refresh halaman untuk mendapatkan user baru --}}
-                            <form action="{{ route('dashboard') }}" method="GET">
-                                <x-primary-button type="submit">
-                                    {{ __('Generate Baru') }}
-                                </x-primary-button>
-                            </form>
-                        </div>
+                        <h3 class="text-lg font-medium mb-4">🗓️ Kalender Libur Nasional {{ date('Y') }}</h3>
 
-                        @if (isset($randomUser))
-                            <div
-                                class="bg-gray-50 dark:bg-gray-700/50 shadow-inner rounded-lg p-6 flex flex-col md:flex-row items-center gap-6">
-                                {{-- Foto Profil --}}
-                                <div class="flex-shrink-0">
-                                    <img src="{{ $randomUser['picture']['large'] }}" alt="Foto Profil"
-                                        class="w-32 h-32 rounded-full shadow-lg border-4 border-white dark:border-gray-600">
-                                </div>
-
-                                {{-- Detail Info --}}
-                                <div class="flex-grow text-center md:text-left">
-                                    <h4 class="text-2xl font-bold">
-                                        {{ $randomUser['name']['title'] }}. {{ $randomUser['name']['first'] }}
-                                        {{ $randomUser['name']['last'] }}
-                                    </h4>
-                                    <p class="text-indigo-500 dark:text-indigo-400 mb-2">
-                                        {{ $randomUser['email'] }}
-                                    </p>
-                                    <p class="text-gray-600 dark:text-gray-400">
-                                        <strong>Telepon:</strong> {{ $randomUser['phone'] }}
-                                    </p>
-                                    <p class="text-gray-600 dark:text-gray-400">
-                                        <strong>Lokasi:</strong> {{ $randomUser['location']['city'] }},
-                                        {{ $randomUser['location']['country'] }}
-                                    </p>
-                                </div>
-                            </div>
-                        @elseif (isset($randomUserError))
-                            <div class="bg-red-100 dark:bg-red-900/50 border border-red-400 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg relative"
+                        @if (isset($holidaysError))
+                            <div class="bg-red-100 dark:bg-red-900/50 border border-red-400 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg"
                                 role="alert">
                                 <strong class="font-bold">Oops!</strong>
-                                <span class="block sm:inline">{{ $randomUserError }}</span>
+                                <span class="block sm:inline">{{ $holidaysError }}</span>
+                            </div>
+                        @else
+                            <div class="space-y-3 max-h-[32rem] overflow-y-auto pr-2">
+                                @forelse ($holidays as $holiday)
+                                    <div
+                                        class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg flex justify-between items-center">
+                                        <div>
+                                            <p class="font-semibold">{{ $holiday['name'] }}</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                {{ \Carbon\Carbon::parse($holiday['date'])->translatedFormat('l, d F Y') }}
+                                            </p>
+                                        </div>
+                                        <span class="text-xs font-bold uppercase text-red-500">LIBUR</span>
+                                    </div>
+                                @empty
+                                    <p class="text-gray-500">Data libur nasional tidak ditemukan.</p>
+                                @endforelse
                             </div>
                         @endif
                     </div>

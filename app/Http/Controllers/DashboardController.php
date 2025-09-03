@@ -30,16 +30,9 @@ class DashboardController extends Controller
             'timezone' => 'Asia/Jakarta',
         ]);
 
-        // --- Logika Random User Generator ---
-        $randomUserResponse = Http::withoutVerifying()->get('https://api.randomuser.me/api/', [
-            'nat' => 'us' // Opsional: batasi kebangsaan agar nama lebih familiar
-        ]);
-
-        $userData = null;
-        if ($randomUserResponse->successful()) {
-            // API mengembalikan array 'results', kita ambil elemen pertamanya
-            $userData = $randomUserResponse->json()['results'][0] ?? null;
-        }
+        // --- (BARU) Logika API Libur Nasional ---
+        $currentYear = date('Y');
+        $holidaysResponse = Http::withoutVerifying()->get("https://date.nager.at/api/v3/PublicHolidays/{$currentYear}/ID");
 
         // --- Data yang akan dikirim ke view ---
         $viewData = [
@@ -58,8 +51,9 @@ class DashboardController extends Controller
             'eligibleStudents' => $eligibleResponse->successful() ? $eligibleResponse->json() : [],
             'eligibleError' => $eligibleResponse->failed() ? 'Gagal memuat data siswa eligible.' : null,
             'selectedAkreditasi' => $selectedAkreditasi,
-            'randomUser' => $userData,
-            'randomUserError' => $randomUserResponse->failed() || is_null($userData) ? 'Gagal memuat profil pengguna acak.' : null,
+            // --- (BARU) Variabel untuk Libur Nasional ---
+            'holidays' => $holidaysResponse->successful() ? $holidaysResponse->json() : [],
+            'holidaysError' => $holidaysResponse->failed() ? 'Gagal memuat data libur nasional.' : null,
 
         ];
 
