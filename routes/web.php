@@ -16,7 +16,7 @@ use App\Http\Controllers\Admin\UserManagementController;
 // Route untuk Halaman Utama (Publik)
 Route::view('/', 'welcome')->name('welcome');
 
-// --- KELOMPOK ROUTE YANG MEMBUTUHKAN LOGIN ---
+// Kelompok route yang memerlukan autentikasi dan verifikasi email
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // Route untuk Dashboard utama (menerima GET dan POST)
@@ -25,7 +25,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/about-us', [AboutController::class, 'index'])->name('about.index');
     // Route Resource untuk semua fungsi CRUD Member
     Route::resource('members', MemberController::class);
-
     // Route untuk Halaman Profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -35,7 +34,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('users', UserManagementController::class);
     });
 });
-// --- AKHIR KELOMPOK ROUTE ---
 
 // Route untuk file autentikasi dari Breeze (login, register, dll)
 require __DIR__ . '/auth.php';
