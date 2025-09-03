@@ -119,7 +119,6 @@ class DashboardController extends Controller
             'minmagnitude' => 5.0 // Ganti dengan nilai magnitudo yang diinginkan
         ]);
 
-        // Jika panggilan API berhasil, proses data untuk chart
         if ($response->successful()) {
             $earthquakes = $response->json()['features'];
             $labels = [];
