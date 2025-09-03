@@ -3,13 +3,20 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build": "vite build",
+        "laravel": "php artisan serve",
+        "mailpit": "cd ../../bin/mailpit && mailpit.exe",
+        "api:analyzer": "cd ../python-service && .\\venv\\Scripts\\activate && uvicorn main:app --reload --port 8001",
+        "api:ptn": "cd ../api-ptn-prodi-data && .\\venv\\Scripts\\activate && uvicorn api:app --reload --port 8002",
+        "api:flask": "cd ../flask-campus-track && .\\venv\\Scripts\\activate && flask --app app run --port 8003",
+        "start:all": "concurrently \"npm:laravel\" \"npm:dev\" \"npm:mailpit\" \"npm:api:analyzer\" \"npm:api:ptn\" \"npm:api:flask\""
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",
         "alpinejs": "^3.4.2",
         "autoprefixer": "^10.4.2",
         "axios": "^1.6.4",
+        "concurrently": "^9.2.1",
         "laravel-vite-plugin": "^1.0",
         "postcss": "^8.4.31",
         "tailwindcss": "^3.1.0",
