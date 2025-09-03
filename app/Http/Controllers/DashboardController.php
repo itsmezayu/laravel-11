@@ -15,11 +15,11 @@ class DashboardController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // API untuk mendapatkan daftar semua PTN
+        //   --- Logika API PTN ---
         $ptnResponse = Http::get('http://127.0.0.1:8002/data/ptn');
-        // Ambil input akreditasi dari request, default-nya 'A'
+
+        //  --- Logika API Siswa Eligible ---
         $selectedAkreditasi = $request->input('akreditasi', '');
-        // API untuk mendapatkan daftar siswa eligible
         $eligibleResponse = Http::get('http://127.0.0.1:8003/eligible', ['akreditasi' => '' . $selectedAkreditasi]);
 
         // --- Logika Prakiraan Cuaca  ---
@@ -30,7 +30,7 @@ class DashboardController extends Controller
             'timezone' => 'Asia/Jakarta',
         ]);
 
-        // --- (BARU) Logika API Libur Nasional ---
+        // --- Logika API Libur Nasional ---
         $currentYear = date('Y');
         $holidaysResponse = Http::withoutVerifying()->get("https://date.nager.at/api/v3/PublicHolidays/{$currentYear}/ID");
 
@@ -51,7 +51,6 @@ class DashboardController extends Controller
             'eligibleStudents' => $eligibleResponse->successful() ? $eligibleResponse->json() : [],
             'eligibleError' => $eligibleResponse->failed() ? 'Gagal memuat data siswa eligible.' : null,
             'selectedAkreditasi' => $selectedAkreditasi,
-            // --- (BARU) Variabel untuk Libur Nasional ---
             'holidays' => $holidaysResponse->successful() ? $holidaysResponse->json() : [],
             'holidaysError' => $holidaysResponse->failed() ? 'Gagal memuat data libur nasional.' : null,
 
