@@ -107,7 +107,7 @@
                         <h3 class="text-lg font-medium mb-4">🐍 Text Analyzer</h3>
                         <form action="{{ route('dashboard') }}" method="POST">
                             @csrf
-                            <textarea name="text_content" rows="8"
+                            <textarea name="text_content" rows="3" placeholder="Ketik atau tempel teks di sini..."
                                 class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm dark:bg-gray-900 dark:text-white">{{ $originalText ?? '' }}</textarea>
                             <x-primary-button type="submit"
                                 class="mt-4">{{ __('Analisis Teks') }}</x-primary-button>
@@ -140,16 +140,16 @@
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <h3 class="text-lg font-medium mb-4">✍️ Lorem Ipsum Generator</h3>
-                        <form action="{{ route('dashboard') }}" method="GET" class=" mb-6">
+                        <form action="{{ route('dashboard') }}" method="GET" class="mb-6">
                             <input type="hidden" name="generate_lorem" value="1">
-
+                            {{-- Label untuk Jumlah --}}
+                            <x-input-label for="generate_count" :value="__('Jumlah')" />
                             {{-- Input untuk Jumlah --}}
-                            <div class="mb-4">
-                                <x-input-label for="generate_count" :value="__('Jumlah')" />
+                            <div class="mb-4 flex items-center gap-2">
                                 <x-text-input id="generate_count" name="generate_count" type="number"
                                     class="mt-1 block w-full" :value="request('generate_count', 3)" min="1" max="100" />
+                                <x-primary-button type="submit">{{ __('Generate') }}</x-primary-button>
                             </div>
-
                             {{-- Pilihan Tipe (Paragraf atau Kalimat) --}}
                             <div class="mb-4">
                                 <x-input-label :value="__('Generate Berdasarkan')" />
@@ -168,8 +168,6 @@
                                     </label>
                                 </div>
                             </div>
-
-                            <x-primary-button type="submit">{{ __('Generate') }}</x-primary-button>
                         </form>
 
                         {{-- Area Hasil --}}
