@@ -48,7 +48,9 @@ class MemberController extends Controller
         return redirect()->route('members.index')->with('success', 'Member baru berhasil ditambahkan.');
     }
 
-    public function show(Member $member) { /* Tidak digunakan */ }
+    public function show(Member $member)
+    { /* Tidak digunakan */
+    }
 
     public function edit(Member $member): View
     {
