@@ -77,7 +77,7 @@ class DashboardController extends Controller
             'jayapura'     => ['name' => 'Jayapura', 'lat' => -2.5337, 'lon' => 140.7181],
         ];
 
-        // Ambil kota dari query (?city=...)
+        // Ambil kota yang dipilih dari request, default ke Surabaya
         $selectedCityKey = $request->input('city', 'surabaya');
         $cityData = $cityCoordinates[$selectedCityKey] ?? $cityCoordinates['surabaya'];
         $cityName = $cityData['name'];
