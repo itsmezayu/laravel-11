@@ -22,13 +22,30 @@ class DashboardController extends Controller
         $selectedAkreditasi = $request->input('akreditasi', '');
         $eligibleResponse = Http::get('http://127.0.0.1:8003/eligible', ['akreditasi' => '' . $selectedAkreditasi]);
 
-        // --- Logika Prakiraan Cuaca  ---
+        // --- Peta kota & koordinat ---
+        $cityCoordinates = [
+            'surabaya' => ['name' => 'Surabaya', 'lat' => -7.2575, 'lon' => 112.7521],
+            'jakarta'  => ['name' => 'Jakarta',  'lat' => -6.2088, 'lon' => 106.8456],
+            'bandung'  => ['name' => 'Bandung',  'lat' => -6.9175, 'lon' => 107.6191],
+            'malang'   => ['name' => 'Malang',   'lat' => -7.9797, 'lon' => 112.6304],
+            // tambah kota lain di sini jika perlu
+        ];
+
+        // --- Ambil parameter dari URL: ?city=jakarta ---
+        $selectedCityKey = $request->input('city', 'surabaya');
+
+        // --- Ambil data kota dari mapping, fallback ke Surabaya jika tidak ditemukan ---
+        $cityData = $cityCoordinates[$selectedCityKey] ?? $cityCoordinates['surabaya'];
+
+        // --- Request ke API cuaca ---
         $weatherResponse = Http::get('https://api.open-meteo.com/v1/forecast', [
-            'latitude' => -7.2575, // Latitude Surabaya
-            'longitude' => 112.7521, // Longitude Surabaya
+            'latitude' => $cityData['lat'],
+            'longitude' => $cityData['lon'],
             'daily' => 'temperature_2m_max,temperature_2m_min',
             'timezone' => 'Asia/Jakarta',
         ]);
+
+        $cityName = $cityData['name'];
 
         // --- Logika API Libur Nasional ---
         $currentYear = date('Y');
@@ -38,6 +55,9 @@ class DashboardController extends Controller
         $viewData = [
             'userName' => $user->name,
             'weatherData' => $weatherResponse->successful() ? $weatherResponse->json() : null,
+            'cityName' => $cityName,
+            'selectedCity' => $selectedCityKey,
+            'weatherError' => $weatherResponse->failed() ? 'Gagal memuat data cuaca.' : null,
             'country' => null,
             'countryError' => null,
             'analysisResults' => null,
