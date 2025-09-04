@@ -185,24 +185,20 @@
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <h3 class="text-lg font-medium mb-4">☀️ Weather Forecast {{ $cityName }}</h3>
-
                         {{-- Dropdown untuk pilih kota --}}
                         <form method="GET" action="{{ route('dashboard') }}" class="mb-4">
                             <label for="city"
                                 class="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2">Pilih Kota:</label>
                             <select name="city" id="city" onchange="this.form.submit()"
-                                class="px-3 py-1 rounded-md text-gray-800">
-                                <option value="surabaya" {{ $selectedCity == 'surabaya' ? 'selected' : '' }}>Surabaya
-                                </option>
-                                <option value="jakarta" {{ $selectedCity == 'jakarta' ? 'selected' : '' }}>Jakarta
-                                </option>
-                                <option value="bandung" {{ $selectedCity == 'bandung' ? 'selected' : '' }}>Bandung
-                                </option>
-                                <option value="malang" {{ $selectedCity == 'malang' ? 'selected' : '' }}>Malang
-                                </option>
+                                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm dark:bg-gray-900 dark:text-gray-300">
+                                @foreach ($cityList as $key => $city)
+                                    <option value="{{ $key }}"
+                                        {{ $selectedCity == $key ? 'selected' : '' }}>
+                                        {{ $city['name'] }}
+                                    </option>
+                                @endforeach
                             </select>
                         </form>
-
                         {{-- Tampilkan data cuaca --}}
                         @if (isset($weatherData['daily']))
                             <div class="space-y-3 max-h-[32rem] overflow-y-auto pr-2">
@@ -230,7 +226,6 @@
                         @endif
                     </div>
                 </div>
-
 
                 {{-- (BARU) FITUR LIBUR NASIONAL --}}
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
