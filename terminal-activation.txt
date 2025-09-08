@@ -28,3 +28,5 @@ python -m app.run
 # --- ALL TERMINAL LARAVEL 11 ---
 cd C:/laragon/www/laravel-11
 ./laravel-11.bat
+-- or --
+npm run start:all
