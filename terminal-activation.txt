@@ -21,7 +21,7 @@ cd C:/laragon/www/api-ptn-prodi-data
 uvicorn api:app --reload --port 8002
 
 # --- TERMINAL 6: API FLASK PTN ---
-cd C:/laragon/www/flask-campus-track-main
+cd C:/laragon/www/flask-campus-track
 .\venv\Scripts\activate
 python -m app.run
 
