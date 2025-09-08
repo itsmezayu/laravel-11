@@ -21,9 +21,9 @@ cd C:/laragon/www/api-ptn-prodi-data
 uvicorn api:app --reload --port 8002
 
 # --- TERMINAL 6: API FLASK PTN ---
-cd C:/laragon/www/flask-campus-track
+cd C:/laragon/www/flask-campus-track-main
 .\venv\Scripts\activate
-flask --app app run --port 8003
+python -m app.run
 
 # --- ALL TERMINAL LARAVEL 11 ---
 cd C:/laragon/www/laravel-11

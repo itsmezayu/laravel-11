@@ -28,7 +28,7 @@ start "API PTN" cmd /k "cd /d C:\laragon\www\api-ptn-prodi-data && call .\venv\S
 
 :: --- TERMINAL 6: API PTN Flask (Python) ---
 echo [6/6] Menjalankan API Flask (Python)...
-start "API Flask" cmd /k "cd /d C:\laragon\www\flask-campus-track && call .\venv\Scripts\activate && flask --app app run --port 8003"
+start "API Flask" cmd /k "cd /d C:\laragon\www\flask-campus-track-main && call .\.venv\Scripts\activate && python -m app.run"
 
 echo.
 echo =======================================================

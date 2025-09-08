@@ -8,7 +8,7 @@
         "mailpit": "cd ../../bin/mailpit && mailpit.exe",
         "api:analyzer": "cd ../python-service && .\\venv\\Scripts\\activate && uvicorn main:app --reload --port 8001",
         "api:ptn": "cd ../api-ptn-prodi-data && .\\venv\\Scripts\\activate && uvicorn api:app --reload --port 8002",
-        "api:flask": "cd ../flask-campus-track && .\\venv\\Scripts\\activate && flask --app app run --port 8003",
+        "api:flask": "cd ../flask-campus-track-main && .\\.venv\\Scripts\\activate && python -m app.run",
         "start:all": "concurrently \"npm:laravel\" \"npm:dev\" \"npm:mailpit\" \"npm:api:analyzer\" \"npm:api:ptn\" \"npm:api:flask\""
     },
     "devDependencies": {
