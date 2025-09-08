@@ -15,8 +15,8 @@ class EligibleStudentController extends Controller
             'akreditasi' => 'required|string|in:A,B,C',
         ]);
 
-        // Panggil API Flask di port 8003
-        $response = Http::get('http://127.0.0.1:8003/eligible', [
+        // Panggil API Flask di port 5000
+        $response = Http::get('http://127.0.0.1:5000/eligible', [
             'akreditasi' => $akreditasi['akreditasi'],
         ]);
 

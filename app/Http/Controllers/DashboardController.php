@@ -21,7 +21,7 @@ class DashboardController extends Controller
 
         //  --- Logika API Siswa Eligible ---
         $selectedAkreditasi = $request->input('akreditasi', '');
-        $eligibleResponse = Http::get('http://127.0.0.1:8003/eligible', ['akreditasi' => '' . $selectedAkreditasi]);
+        $eligibleResponse = Http::get('http://127.0.0.1:5000/eligible', ['akreditasi' => '' . $selectedAkreditasi]);
 
         // --- Peta kota & koordinat ---
         $cityCoordinates = [
