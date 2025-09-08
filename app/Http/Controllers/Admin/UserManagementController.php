@@ -37,6 +37,36 @@ class UserManagementController extends Controller
     }
 
     /**
+     * Menampilkan form tambah user.
+     */
+    public function create()
+    {
+        return view('admin.users.create');
+    }
+
+    /**
+     * Menyimpan user baru ke database.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class, 'ends_with:@school.com,@admin.com'],
+            'role' => ['required', 'string', Rule::in(['admin', 'user'])],
+            'password' => ['required', 'string', 'min:1', 'confirmed'],
+        ]);
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'role' => $request->role,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan.');
+    }
+
+    /**
      * Menampilkan form untuk mengedit user.
      */
     public function edit(User $user)
