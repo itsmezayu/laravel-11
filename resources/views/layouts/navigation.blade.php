@@ -10,15 +10,19 @@
                 </div>
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    {{-- Dashboard --}}
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    {{-- Members --}}
                     <x-nav-link :href="route('members.index')" :active="request()->routeIs('members.*')">
                         {{ __('Members') }}
                     </x-nav-link>
+                    {{-- About Us --}}
                     <x-nav-link :href="route('about.index')" :active="request()->routeIs('about.index')">
                         {{ __('About Us') }}
                     </x-nav-link>
+                    {{-- Admin-specific link --}}
                     @can('is-admin')
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             {{ __('User Management') }}
