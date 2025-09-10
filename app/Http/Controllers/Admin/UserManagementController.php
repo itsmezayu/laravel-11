@@ -51,7 +51,6 @@ class UserManagementController extends Controller
         return view('admin.users.index', compact('users', 'sortBy', 'sortDirection'));
     }
 
-
     /**
      * Menampilkan form tambah user.
      */
