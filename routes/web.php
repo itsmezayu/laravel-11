@@ -18,7 +18,6 @@ Route::view('/', 'welcome')->name('welcome');
 
 // Kelompok route yang memerlukan autentikasi dan verifikasi email
 Route::middleware(['auth', 'verified'])->group(function () {
-
     // Route untuk Dashboard utama (menerima GET dan POST)
     Route::match(['get', 'post'], '/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     // Route untuk Halaman About Us (hanya admin)
@@ -29,7 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    // --- KELOMPOK ROUTE KHUSUS ADMIN ---
+    // Route Resource untuk Manajemen User (hanya admin)
     Route::middleware(['auth', 'can:is-admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::resource('users', UserManagementController::class);
     });
