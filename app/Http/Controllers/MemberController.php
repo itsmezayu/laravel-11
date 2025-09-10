@@ -16,16 +16,27 @@ class MemberController extends Controller
         $sortableColumns = ['name', 'position', 'created_at'];
         $sortBy = (string) $request->query('sort_by', 'created_at');
         $sortDirection = (string) $request->query('sort_direction', 'desc');
+
         if (!in_array($sortBy, $sortableColumns)) $sortBy = 'created_at';
         if (!in_array(strtolower($sortDirection), ['asc', 'desc'])) $sortDirection = 'desc';
 
         $membersQuery = Member::query();
 
+        // Filter untuk user non-admin
         if (Gate::denies('is-admin')) {
             $membersQuery->where('user_id', Auth::id());
         }
 
-        $members = $membersQuery->orderBy($sortBy, $sortDirection)->paginate(10);
+        // 🔍 Tambahkan fitur pencarian
+        if ($search = $request->query('search')) {
+            $membersQuery->where(function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('position', 'like', '%' . $search . '%');
+            });
+        }
+
+        $members = $membersQuery->orderBy($sortBy, $sortDirection)->paginate(10)->withQueryString();
+
         return view('members.index', compact('members', 'sortBy', 'sortDirection'));
     }
 

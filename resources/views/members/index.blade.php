@@ -16,6 +16,43 @@
                 </a>
             </div>
 
+            {{-- Form Pencarian --}}
+            <div class="w-full mb-4">
+                <form method="GET" action="{{ route('members.index') }}" class="flex items-center gap-2 w-full">
+                    {{-- Input Search dengan ikon --}}
+                    <div class="relative flex-1">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M12.9 14.32a8 8 0 111.414-1.414l4.387 4.387a1 1 0 01-1.414 1.414l-4.387-4.387zM14 8a6 6 0 11-12 0 6 6 0 0112 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            class="w-full pl-10 pr-4 py-2 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                            placeholder="Cari nama atau posisi...">
+                    </div>
+
+                    {{-- Tombol Cari --}}
+                    <button type="submit"
+                        class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded hover:bg-indigo-700 transition">
+                        Cari
+                    </button>
+
+                    {{-- Tombol Reset --}}
+                    @if (request('search'))
+                        <a href="{{ route('members.index') }}"
+                            class="p-2 bg-gray-500 text-white text-sm rounded hover:bg-gray-600 transition"
+                            title="Reset pencarian">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </a>
+                    @endif
+                </form>
+            </div>
+
             {{-- Menampilkan pesan sukses --}}
             @if (session('success'))
                 <div class="mb-4 rounded-lg bg-green-100 p-4 text-sm text-green-700 dark:bg-green-200 dark:text-green-800"
@@ -63,7 +100,8 @@
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                         {{ $members->firstItem() + $index }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ $member->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">{{ $member->name }}
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                         {{ $member->position }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

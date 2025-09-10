@@ -58,7 +58,7 @@
                         <a href="{{ route('admin.users.index') }}"
                             class="p-2 bg-gray-500 text-white text-sm rounded hover:bg-gray-600 transition flex items-center justify-center"
                             title="Reset pencarian">
-                            <svg class="h-5 w-6" fill="none" stroke="currentColor" stroke-width="2"
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
                                 viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M6 18L18 6M6 6l12 12" />
                             </svg>
