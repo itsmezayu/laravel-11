@@ -21,7 +21,7 @@ class UserManagementController extends Controller
         $sortBy = $request->query('sort_by', 'created_at');
         $sortDirection = $request->query('sort_direction', 'desc');
 
-        // Validasi
+        // Validasi kolom sort dan arah sort
         if (!in_array($sortBy, $sortableColumns)) {
             $sortBy = 'created_at';
         }
@@ -29,12 +29,28 @@ class UserManagementController extends Controller
             $sortDirection = 'desc';
         }
 
-        // Ambil data user dengan sorting dan paginasi
-        $users = User::orderBy($sortBy, $sortDirection)->paginate(10);
+        // Ambil keyword search (jika ada)
+        $search = $request->query('search');
 
-        // Kirim variabel sorting ke view
+        // Query user dengan optional search
+        $query = User::query();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Sorting dan paginasi
+        $users = $query->orderBy($sortBy, $sortDirection)->paginate(10);
+
+        // Simpan query agar pagination & sort tetap berfungsi saat search
+        $users->appends($request->query());
+
         return view('admin.users.index', compact('users', 'sortBy', 'sortDirection'));
     }
+
 
     /**
      * Menampilkan form tambah user.

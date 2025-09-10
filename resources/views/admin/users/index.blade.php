@@ -29,6 +29,26 @@
                     {{ session('error') }}
                 </div>
             @endif
+
+            {{-- Form Pencarian --}}
+            <div class="w-full mb-4">
+                <form method="GET" action="{{ route('admin.users.index') }}" class="flex items-center gap-2 w-full">
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                        placeholder="Cari nama atau email...">
+                    <button type="submit"
+                        class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition">
+                        Cari
+                    </button>
+                    @if (request('search'))
+                        <a href="{{ route('admin.users.index') }}"
+                            class="px-4 py-2 bg-gray-500 text-white text-sm font-medium rounded-md hover:bg-gray-600 transition">
+                            Reset
+                        </a>
+                    @endif
+                </form>
+            </div>
+
             {{-- Menampilkan tabel --}}
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
